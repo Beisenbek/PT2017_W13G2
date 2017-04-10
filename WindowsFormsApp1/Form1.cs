@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpePaint;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,6 +29,7 @@ namespace WindowsFormsApp1
             bmp = new Bitmap(pictureBox2.Width, pictureBox2.Height);
             pictureBox2.Image = bmp;
             g = Graphics.FromImage(bmp);
+            g.Clear(Color.White);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -56,14 +58,26 @@ namespace WindowsFormsApp1
                     prevPoint = e.Location;
                     break;
                 case State.Fill:
-                    q.Enqueue(e.Location);
-                    colorOrigin = bmp.GetPixel(e.X, e.Y);
-                    colorFill = p.Color;
-                    Fill();
+                    F1(e.Location);
                     break;
                 default:
                     break;
             }
+        }
+
+        private void F2(Point point)
+        {
+            MapFill m = new MapFill();
+            m.Fill(g, point, p.Color, ref bmp);
+            pictureBox2.Image = bmp;
+        }
+
+        private void F1(Point point)
+        {
+            q.Enqueue(point);
+            colorOrigin = bmp.GetPixel(point.X, point.Y);
+            colorFill = p.Color;
+            Fill();
         }
 
         private void Fill()
@@ -76,8 +90,9 @@ namespace WindowsFormsApp1
                 Step(curPoint.X, curPoint.Y + 1);
                 Step(curPoint.X , curPoint.Y - 1);
             }
-
             pictureBox2.Refresh();
+
+
         }
 
         private void Step(int x, int y)
